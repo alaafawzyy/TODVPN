@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_protocol_wireguard" translatable="false">WireGuard</string>
+    <string name="settings_protocol_v2ray" translatable="false">V2Ray</string>
+    <string name="settings_protocol_any">Any</string>
+</resources>

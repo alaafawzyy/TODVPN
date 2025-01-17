@@ -1,0 +1,94 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias libs.plugins.kotlin.kapt
+    alias libs.plugins.dagger.hilt
+    id 'maven-publish'
+}
+
+android {
+    namespace 'co.sentinel.based_vpn'
+
+    defaultConfig {
+        minSdk libs.versions.minSdk.get().toInteger()
+        targetSdk libs.versions.compileSdk.get().toInteger()
+        compileSdk libs.versions.compileSdk.get().toInteger()
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility libs.versions.targetJvm.get()
+        targetCompatibility libs.versions.targetJvm.get()
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion libs.versions.composeCompiler.get()
+    }
+    sourceSets.main.res.srcDirs += 'src/main/res-flags'
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'io.norselabs.vpn'
+            artifactId = 'based'
+            version = '0.0.24'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+    repositories {
+        maven {
+            url "https://nexus.norselabs.dev/repository/maven-releases/"
+            credentials {
+                username "${System.getenv("NORSELABS_REPO_LOGIN")}"
+                password "${System.getenv("NORSELABS_REPO_PASSWORD")}"
+            }
+        }
+    }
+}
+
+dependencies {
+
+    implementation libs.android.core.ktx
+    implementation libs.kotlin.stdlib
+    implementation libs.coroutines.core
+    implementation libs.timber
+    implementation libs.dagger.hilt
+    implementation libs.lifecycle.runtime
+    implementation libs.lifecycle.viewmodel
+    implementation libs.retrofit
+    implementation libs.http.logger
+    implementation libs.gson
+    implementation libs.gson.converter
+    implementation libs.arrow.core
+    implementation libs.vpn.v2ray
+    implementation libs.common
+    implementation libs.common.network
+    implementation libs.common.flags
+    implementation libs.common.logger
+    implementation libs.core.vpn
+    implementation libs.compose.runtime
+    implementation libs.android.appcompat
+    implementation libs.kotlin.collection.immutable
+
+//    implementation project(path: ':common_network')
+//    implementation project(path: ':core_vpn')
+
+    kapt libs.hilt.compiler
+}

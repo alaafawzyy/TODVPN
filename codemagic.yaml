@@ -1,0 +1,47 @@
+
+workflows:
+    native-android:
+        name: Android Build
+        environment:
+          java: 17
+          groups:
+            - default
+            - basedapps_google_play
+          android_signing:
+            - BA_KEYSTORE
+        triggering:
+            events:
+                - push
+            branch_patterns:
+                - pattern: main
+                  include: true
+                  source: true
+        scripts:
+            - name: Set Android SDK location
+              script: |
+                echo "sdk.dir=$ANDROID_SDK_ROOT" > "$FCI_BUILD_DIR/local.properties"
+            - name: Fix ./gradlew permission
+              script: |
+                    chmod +x ./gradlew
+            - name: Set up keystore
+              script: |
+                    cp $CM_KEYSTORE_PATH /tmp/keystore.keystore
+                    cat >> "$FCI_BUILD_DIR/key.properties" <<EOF
+                    storePassword=$CM_KEYSTORE_PASSWORD
+                    keyPassword=$CM_KEY_PASSWORD
+                    keyAlias=$CM_KEY_ALIAS
+                    storeFile=/tmp/keystore.keystore
+                    EOF
+            - name: Build Android production release apk
+              script: |
+                ./gradlew assembleRelease -Pandroid.injected.signing.store.file=/tmp/keystore.keystore -Pandroid.injected.signing.store.password="$CM_KEYSTORE_PASSWORD" -Pandroid.injected.signing.key.alias=$CM_KEY_ALIAS -Pandroid.injected.signing.key.password="$CM_KEY_PASSWORD"
+            - name: Build Android production release aab
+              script: |
+                ./gradlew bundleRelease -Pandroid.injected.signing.store.file=/tmp/keystore.keystore -Pandroid.injected.signing.store.password="$CM_KEYSTORE_PASSWORD" -Pandroid.injected.signing.key.alias=$CM_KEY_ALIAS -Pandroid.injected.signing.key.password="$CM_KEY_PASSWORD"
+        artifacts:
+            - app/build/outputs/**/*.apk
+            - app/build/outputs/**/*.aab
+        publishing:
+            google_play:
+                credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+                track: internal

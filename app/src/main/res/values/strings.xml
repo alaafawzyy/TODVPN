@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name" translatable="false">TOdVPN</string>
+
+    <string name="common_settings">Settings</string>
+    <string name="common_ok">OK</string>
+    <string name="common_cancel">Cancel</string>
+
+    <string name="dashboard_your_ip">Your IP address</string>
+    <string name="dashboard_loading">Preparing your account…</string>
+    <string name="dashboard_connect_to_vpn">Connect to VPN</string>
+    <string name="dashboard_disconnect_from_vpn">Disconnect</string>
+    <string name="dashboard_error_connection_title">Unable to connect to the server</string>
+    <string name="dashboard_error_connection_description">Please choose another server or try again later</string>
+    <string name="dashboard_menu_settings">@string/common_settings</string>
+    <string name="dashboard_rating" translatable="false">Do you like our app?</string>
+
+    <string name="countries_title">Choose country</string>
+
+    <string name="cities_title">Choose city</string>
+    <string name="cities_servers_number">%d servers available</string>
+
+    <string name="settings_title">@string/common_settings</string>
+    <string name="settings_row_dns">DNS Server</string>
+    <string name="settings_row_protocol">VPN protocol</string>
+    <string name="settings_row_logs">Share logs</string>
+    <string name="settings_row_split_tunneling" translatable="false">Split Tunneling</string>
+
+    <string name="settings_protocol_change_title">Choose protocol</string>
+
+    <string name="settings_dns_cloudflare">Cloudflare DNS</string>
+    <string name="settings_dns_google">Google DNS</string>
+    <string name="settings_dns_handshake">Handshake DNS</string>
+    <string name="settings_dns_change_title">Choose type</string>
+
+    <string name="error_generic_title">Something went wrong</string>
+    <string name="error_generic_description">Please check your Internet connection and try again later</string>
+    <string name="error_generic_button">Try again</string>
+    <string name="error_banned_title">App has been blocked for violating the terms of use of the service</string>
+
+    <string name="update_required_title">Update Required</string>
+    <string name="update_required_description">Please download the latest version of the app</string>
+    <string name="update_required_button">Go to Play Store</string>
+
+    <string name="split_tunneling_title" translatable="false">Split Tunneling</string>
+    <string name="split_tunneling_selector" translatable="false">Split Tunneling</string>
+    <string name="split_tunneling_enabled" translatable="false">Enable VPN for selected apps</string>
+    <string name="split_tunneling_bypass" translatable="false">Disable VPN for selected apps</string>
+    <string name="split_tunneling_disabled" translatable="false">Disabled</string>
+</resources>

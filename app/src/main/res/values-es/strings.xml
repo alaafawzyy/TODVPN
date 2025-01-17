@@ -1,0 +1,39 @@
+<resources>
+    <string name="common_settings">Configuración</string>
+    <string name="common_ok">Aceptar</string>
+    <string name="common_cancel">Cancelar</string>
+
+    <string name="dashboard_your_ip">Tu dirección IP</string>
+    <string name="dashboard_loading">Preparando tu cuenta…</string>
+    <string name="dashboard_connect_to_vpn">Conectar a VPN</string>
+    <string name="dashboard_disconnect_from_vpn">Desconectar</string>
+    <string name="dashboard_error_connection_title">No se puede conectar al servidor</string>
+    <string name="dashboard_error_connection_description">Por favor, elige otro servidor o intenta nuevamente más tarde</string>
+    <string name="dashboard_menu_settings">@string/common_settings</string>
+
+    <string name="countries_title">Elegir país</string>
+
+    <string name="cities_title">Elegir ciudad</string>
+    <string name="cities_servers_number">%d servidores disponibles</string>
+
+    <string name="settings_title">@string/common_settings</string>
+    <string name="settings_row_dns">Servidor DNS</string>
+    <string name="settings_row_protocol">Protocolo VPN</string>
+    <string name="settings_row_logs">Compartir registros</string>
+
+    <string name="settings_protocol_change_title">Elegir protocolo</string>
+
+    <string name="settings_dns_cloudflare">DNS de Cloudflare</string>
+    <string name="settings_dns_google">DNS de Google</string>
+    <string name="settings_dns_handshake">DNS de Handshake</string>
+    <string name="settings_dns_change_title">Elegir tipo</string>
+
+    <string name="error_generic_title">Algo salió mal</string>
+    <string name="error_generic_description">Por favor, revisa tu conexión a Internet e intenta nuevamente más tarde</string>
+    <string name="error_generic_button">Intentar de nuevo</string>
+    <string name="error_banned_title">La aplicación ha sido bloqueada por violar los términos de uso del servicio</string>
+
+    <string name="update_required_title">Actualización requerida</string>
+    <string name="update_required_description">Por favor, descarga la versión más reciente de la aplicación</string>
+    <string name="update_required_button">Ir a Play Store</string>
+</resources>

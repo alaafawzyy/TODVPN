@@ -1,0 +1,60 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    id 'maven-publish'
+}
+
+android {
+    namespace 'io.norselabs.vpn.common_flags'
+
+    defaultConfig {
+        minSdk libs.versions.minSdk.get().toInteger()
+        targetSdk libs.versions.compileSdk.get().toInteger()
+        compileSdk libs.versions.compileSdk.get().toInteger()
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility libs.versions.targetJvm.get()
+        targetCompatibility libs.versions.targetJvm.get()
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'io.norselabs.vpn'
+            artifactId = 'common_flags'
+            version = '0.0.2'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'Nexus'
+            url = 'https://nexus.norselabs.dev/repository/maven-releases/'
+            credentials {
+                username "${System.getenv("NORSELABS_REPO_LOGIN")}"
+                password "${System.getenv("NORSELABS_REPO_PASSWORD")}"
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation libs.android.core.ktx
+}
