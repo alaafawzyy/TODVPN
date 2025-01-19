@@ -1,11 +1,14 @@
+
 plugins {
     alias libs.plugins.android.application
     alias libs.plugins.kotlin.android
     alias libs.plugins.kotlin.kapt
     alias libs.plugins.dagger.hilt
-   alias libs.plugins.google.services
-   alias libs.plugins.google.crashlytics
+  alias libs.plugins.google.services
+  alias libs.plugins.google.crashlytics
+
 }
+//apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace 'co.gulf.todvpn.vpn'
@@ -36,41 +39,36 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
         sourceCompatibility libs.versions.targetJvm.get()
         targetCompatibility libs.versions.targetJvm.get()
     }
-
     kotlinOptions {
         jvmTarget = '17'
     }
-
     buildFeatures {
         compose true
     }
-
     composeOptions {
         kotlinCompilerExtensionVersion libs.versions.composeCompiler.get()
     }
-
     packagingOptions {
         resources {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
+        // This fix aab issue
         jniLibs.useLegacyPackaging = true
     }
-
     sourceSets {
         main { jniLibs.srcDirs = ['libs'] }
     }
-
     buildFeatures {
         buildConfig = true
     }
 }
 
 dependencies {
+
     implementation libs.android.core.ktx
     implementation libs.kotlin.stdlib
     implementation libs.coroutines.core
@@ -87,20 +85,23 @@ dependencies {
     implementation libs.android.appcompat
     implementation libs.kotlin.collection.immutable
     implementation libs.coil
+//    implementation libs.core.vpn
     implementation libs.common
+//    implementation libs.common.map
     implementation libs.common.flags
+//    implementation libs.common.logger
     implementation libs.common.net.apps
     implementation libs.material3.vlatestversion
     implementation "androidx.compose.foundation:foundation:1.6.7"
     implementation "androidx.compose.material3:material3:1.2.1"
     implementation "androidx.compose.ui:ui:1.6.7"
     implementation "androidx.compose.foundation:foundation-layout:1.6.7"
+
     implementation libs.firebase.firestore.ktx
-    implementation libs.firebase.auth.ktx
 
+    implementation 'com.google.firebase:firebase-auth:23.1.0'
+    implementation 'com.google.firebase:firebase-core:21.1.0'
 
-    //firebase
- //   implementation(platform(libs.firebase.bom.v3380))
 
     kapt libs.hilt.compiler
 
@@ -110,4 +111,7 @@ dependencies {
     implementation project(path: ':core_vpn')
     implementation project(path: ':common_map')
     implementation project(path: ':common_logger')
+//    implementation "io.norselabs.vpn:based:0.0.1"
 }
+
+

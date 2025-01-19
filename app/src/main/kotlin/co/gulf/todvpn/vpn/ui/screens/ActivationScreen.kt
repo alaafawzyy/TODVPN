@@ -17,42 +17,58 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
 @Composable
-fun ActivationScreen() {
-  val context = LocalContext.current // نحصل على الـ context هنا
+fun ActivationScreen(navController: NavHostController, onActivationComplete: () -> Unit) {
+  val context = LocalContext.current
   val currentUser = FirebaseAuth.getInstance().currentUser
   val db = FirebaseFirestore.getInstance()
   var userState by remember { mutableStateOf<UserState?>(null) }
   var isLoading by remember { mutableStateOf(true) }
 
-  // التحقق إذا كان المستخدم مسجل دخول أو لا
   LaunchedEffect(currentUser) {
     if (currentUser == null) {
-      // تسجيل الدخول المجهول إذا لم يكن هناك مستخدم
       FirebaseAuth.getInstance().signInAnonymously()
         .addOnCompleteListener { task ->
           if (task.isSuccessful) {
             val newUser = FirebaseAuth.getInstance().currentUser
             newUser?.uid?.let { userId ->
-              // بعد تسجيل الدخول بنجاح، نستخدم LaunchedEffect لاستدعاء الدالة
-              loadUserData(userId, db, context) { data ->
-                userState = data
+              // تحقق إذا كانت البيانات موجودة في Firestore
+              val userDocRef = db.collection("users").document(userId)
+              userDocRef.get().addOnSuccessListener { document ->
+                if (!document.exists()) {
+                  // لو البيانات مش موجودة، هنضيف بيانات جديدة
+                  val userState = UserState(
+                    startDate = Date(),
+                    activationEndDate = null,
+                    isTrialActive = true
+                  )
+                  userDocRef.set(userState)
+                }
+                // تحميل بيانات المستخدم بعد إضافتها أو التأكد من وجودها
+                loadUserData(userId, db, context) { data ->
+                  userState = data
+                  isLoading = false
+                }
+              }.addOnFailureListener {
+                Toast.makeText(context, "فشل تحميل بيانات المستخدم. حاول مرة أخرى.", Toast.LENGTH_SHORT).show()
                 isLoading = false
               }
             }
           } else {
-            // في حالة فشل تسجيل الدخول
-            Log.e("ActivationScreen", "Failed to sign in anonymously", task.exception)
-            Toast.makeText(context, "Failed to sign in anonymously.", Toast.LENGTH_SHORT).show()
+            Log.e("ActivationScreen", "فشل تسجيل الدخول المجهول", task.exception)
+            Toast.makeText(context, "فشل تسجيل الدخول المجهول.", Toast.LENGTH_SHORT).show()
             isLoading = false
           }
         }
     } else {
-      // إذا كان هناك مستخدم بالفعل مسجل دخول
       currentUser.uid?.let { userId ->
         loadUserData(userId, db, context) { data ->
           userState = data
@@ -62,22 +78,27 @@ fun ActivationScreen() {
     }
   }
 
-  // إذا كانت البيانات لا تزال في حالة تحميل
   if (isLoading) {
-    // عرض شاشة تحميل أو رسالة للمستخدم
     Text("Loading...")
   } else {
-    // بعد تحميل البيانات
     userState?.let {
-      if (it.isTrialActive) {
-        TrialScreen()  // إظهار الشاشة الرئيسية للتجربة المجانية
+      val trialEndDate = it.startDate?.let { startDate ->
+        Calendar.getInstance().apply {
+          time = startDate
+          add(Calendar.DAY_OF_YEAR, 7) // Adding 7 days for trial period
+        }.time
+      }
+
+      if (trialEndDate != null && Date().after(trialEndDate)) {
+        // إذا انتهت فترة التجربة، عرض شاشة التفعيل
+        ActivationCodeScreen(currentUser?.uid ?: "")
       } else {
-        ActivationCodeScreen(currentUser?.uid ?: "") // إظهار شاشة إدخال كود التفعيل
+        // إذا كانت فترة التجربة لا تزال فعالة
+        TrialScreen(navController)
       }
     }
   }
 }
-
 
 fun loadUserData(
   userId: String,
@@ -89,54 +110,29 @@ fun loadUserData(
 
   userDocRef.get().addOnSuccessListener { document ->
     if (document.exists()) {
-      val startDate = document.getTimestamp("startDate")
-      val activationEndDate = document.getTimestamp("activationEndDate")
-      val isTrialActive = document.getBoolean("isTrialActive") ?: true  // إذا كانت القيمة null نستخدم true افتراضيًا
+      val startDate = document.getTimestamp("startDate")?.toDate()
+      val activationEndDate = document.getTimestamp("activationEndDate")?.toDate()
+      val isTrialActive = document.getBoolean("isTrialActive") ?: true
 
       val userState = UserState(
-        startDate = startDate?.toDate(),
-        activationEndDate = activationEndDate?.toDate(),
+        startDate = startDate,
+        activationEndDate = activationEndDate,
         isTrialActive = isTrialActive
       )
 
-      // تمرير البيانات المحملة
       onUserDataLoaded(userState)
     } else {
-      // إذا كانت بيانات المستخدم غير موجودة
       Toast.makeText(context, "User data not found. Please try again.", Toast.LENGTH_SHORT).show()
       onUserDataLoaded(null)
     }
   }.addOnFailureListener {
-    // في حالة فشل تحميل البيانات
     Toast.makeText(context, "Failed to load user data. Please try again.", Toast.LENGTH_SHORT).show()
     onUserDataLoaded(null)
   }
 }
 
-
-
-@Composable
-fun TrialScreen() {
-  // هذه الشاشة تظهر أثناء فترة التجربة المجانية
-  Column(
-    modifier = Modifier.fillMaxSize(),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center
-  ) {
-    Text("You are on a 7-day trial!")
-    Button(
-      onClick = {
-        // هنا يمكن إضافة الكود للانتقال إلى شاشة أخرى أو القيام بإجراءات معينة.
-      }
-    ) {
-      Text("Proceed")
-    }
-  }
-}
-
 @Composable
 fun ActivationCodeScreen(userId: String) {
-  // شاشة إدخال كود التفعيل
   var activationCode by remember { mutableStateOf("") }
   val db = FirebaseFirestore.getInstance()
   val context = LocalContext.current
@@ -158,33 +154,104 @@ fun ActivationCodeScreen(userId: String) {
     Spacer(modifier = Modifier.height(16.dp))
     Button(
       onClick = {
-        // التحقق من الكود في Firestore
-        val activationDocRef = db.collection("activationCodes").document(activationCode)
+        val activationDocRef = db.collection("codes").document(activationCode)
         activationDocRef.get().addOnSuccessListener { document ->
           if (document.exists()) {
-            val isActive = document.getBoolean("isActive") ?: false
-            if (isActive) {
-              // كود التفعيل صحيح، تحديث بيانات المستخدم
-              val duration = document.getLong("duration")?.toInt() ?: 0
+            val isUsed = document.getBoolean("isUsed") ?: false
+            val duration = document.getLong("duration")?.toInt() ?: 0
+
+            if (!isUsed && duration > 0) {
               val activationEndDate = Calendar.getInstance().apply {
                 add(Calendar.DAY_OF_YEAR, duration)
               }.time
 
+              // Update the user data with the activation end date and set trial as inactive
               db.collection("users").document(userId).update(
                 "activationEndDate", activationEndDate,
                 "isTrialActive", false
               )
+              db.collection("codes").document(activationCode).update("isUsed", true)
               Toast.makeText(context, "Activation successful!", Toast.LENGTH_SHORT).show()
             } else {
-              Toast.makeText(context, "Invalid code", Toast.LENGTH_SHORT).show()
+              Toast.makeText(context, "Invalid or already used code.", Toast.LENGTH_SHORT).show()
             }
           } else {
-            Toast.makeText(context, "Code not found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Code not found.", Toast.LENGTH_SHORT).show()
           }
+        }.addOnFailureListener {
+          Toast.makeText(context, "Failed to validate the code. Please try again.", Toast.LENGTH_SHORT).show()
         }
       }
     ) {
       Text("Activate")
     }
   }
+}
+
+fun createActivationCode(db: FirebaseFirestore, code: String, duration: Int) {
+  val activationCodeData = hashMapOf(
+    "code" to code,  // Ensure this code is unique and not empty
+    "duration" to duration,
+    "isUsed" to false,
+    "createdAt" to Timestamp.now()
+  )
+  db.collection("codes").document(code).set(activationCodeData)
+}
+
+fun extendActivationCode(db: FirebaseFirestore, code: String, newDuration: Int) {
+  db.collection("codes").document(code).update("duration", newDuration)
+}
+
+fun deleteActivationCode(db: FirebaseFirestore, code: String) {
+  db.collection("codes").document(code).delete()
+}
+
+fun getActivationCodesStats(db: FirebaseFirestore, onStatsLoaded: (Int, Int) -> Unit) {
+  val codesRef = db.collection("codes")
+  codesRef.get().addOnSuccessListener { querySnapshot ->
+    val totalCodes = querySnapshot.size()
+    val unusedCodes = querySnapshot.filter { it.getBoolean("isUsed") == false }.size
+    onStatsLoaded(totalCodes, unusedCodes)
+  }
+}
+
+@Composable
+fun TrialScreen(navController: NavHostController) {
+  Column(
+    modifier = Modifier.fillMaxSize(),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.Center
+  ) {
+    Text("You are on a 7-day trial!")
+    Button(
+      onClick = {
+        // الانتقال إلى الداشبورد
+        navController.navigate("dashboard")
+      }
+    ) {
+      Text("Proceed")
+    }
+  }
+}
+
+@Composable
+fun NavigationGraph(navController: NavHostController) {
+  NavHost(navController = navController, startDestination = "activation") {
+    composable("activation") {
+      ActivationScreen(navController = navController, onActivationComplete = {
+        // الانتقال إلى الداشبورد عند الانتهاء من التفعيل
+        navController.navigate("dashboard")
+      })
+    }
+    composable("dashboard") {
+      // شاشة الداشبورد الخاصة بك
+      DashboardScreen()
+    }
+  }
+}
+
+@Composable
+fun DashboardScreen() {
+  // محتوى شاشة الداشبورد
+  Text("Welcome to the Dashboard!")
 }
