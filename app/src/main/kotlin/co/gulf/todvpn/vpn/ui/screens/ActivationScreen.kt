@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -168,7 +169,7 @@ fun ActivationCodeScreen(userId: String) {
               // Update the user data with the activation end date and set trial as inactive
               db.collection("users").document(userId).update(
                 "activationEndDate", activationEndDate,
-                "isTrialActive", false
+                "trialActive", false
               )
               db.collection("codes").document(activationCode).update("isUsed", true)
               Toast.makeText(context, "Activation successful!", Toast.LENGTH_SHORT).show()
@@ -233,6 +234,8 @@ fun TrialScreen(navController: NavHostController) {
     }
   }
 }
+
+
 
 @Composable
 fun NavigationGraph(navController: NavHostController) {

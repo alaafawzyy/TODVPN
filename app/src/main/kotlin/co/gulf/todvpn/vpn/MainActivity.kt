@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
               navigateToSettings = { navController.navigate(Destination.Settings) },
             )
           }
-          composable("activation") {
+          composable(Destination.Activation) {
             ActivationScreen(navController = navController, onActivationComplete = {
               // الانتقال إلى الداشبورد عند الانتهاء من التفعيل
               navController.navigate("dashboard") {
