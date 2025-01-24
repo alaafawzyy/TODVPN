@@ -1,13 +1,14 @@
 
 plugins {
     alias libs.plugins.android.application
-    alias libs.plugins.kotlin.android
+ alias libs.plugins.kotlin.android
     alias libs.plugins.kotlin.kapt
     alias libs.plugins.dagger.hilt
-  alias libs.plugins.google.services
+ // alias libs.plugins.google.services
   alias libs.plugins.google.crashlytics
-
+    id 'com.google.gms.google-services'
 }
+
 //apply plugin: 'com.google.gms.google-services'
 
 android {
@@ -68,7 +69,9 @@ android {
 }
 
 dependencies {
-
+    implementation platform('com.google.firebase:firebase-bom:32.3.1') // أو أحدث نسخة
+    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation libs.android.core.ktx
     implementation libs.kotlin.stdlib
     implementation libs.coroutines.core
