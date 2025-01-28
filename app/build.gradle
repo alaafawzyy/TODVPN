@@ -1,11 +1,15 @@
+
 plugins {
     alias libs.plugins.android.application
-    alias libs.plugins.kotlin.android
+ alias libs.plugins.kotlin.android
     alias libs.plugins.kotlin.kapt
     alias libs.plugins.dagger.hilt
-    //alias libs.plugins.google.services
-    //alias libs.plugins.google.crashlytics
+ // alias libs.plugins.google.services
+  alias libs.plugins.google.crashlytics
+    id 'com.google.gms.google-services'
 }
+
+//apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace 'co.gulf.todvpn.vpn'
@@ -65,7 +69,9 @@ android {
 }
 
 dependencies {
-
+    implementation platform('com.google.firebase:firebase-bom:32.3.1') // أو أحدث نسخة
+    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx'
     implementation libs.android.core.ktx
     implementation libs.kotlin.stdlib
     implementation libs.coroutines.core
@@ -94,8 +100,10 @@ dependencies {
     implementation "androidx.compose.ui:ui:1.6.7"
     implementation "androidx.compose.foundation:foundation-layout:1.6.7"
 
+    implementation libs.firebase.firestore.ktx
 
-
+    implementation 'com.google.firebase:firebase-auth:23.1.0'
+    implementation 'com.google.firebase:firebase-core:21.1.0'
 
 
     kapt libs.hilt.compiler
@@ -108,3 +116,5 @@ dependencies {
     implementation project(path: ':common_logger')
 //    implementation "io.norselabs.vpn:based:0.0.1"
 }
+
+

@@ -1,5 +1,6 @@
 [versions]
 # Platform
+firebaseBom = "32.6.0"
 foundation = "1.5.0"
 material3 = "<latest_version>"
 minSdk = "26"
@@ -27,6 +28,8 @@ hiltNavigation = "1.2.0"
 appcompat = "1.7.0"
 composeActivity = "1.9.1"
 ui = "1.5.0"
+firebaseFirestoreKtx = "25.1.1"
+firebaseAuthKtx = "23.1.0"
 
 [libraries]
 # Android
@@ -48,6 +51,7 @@ compose-material3 = { module = "androidx.compose.material3:material3", version.r
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 # DI
 dagger-hilt = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }
+firebase-bom-v3380 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 foundation-v150 = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigation" }
@@ -90,12 +94,14 @@ common-flags = { module = "io.norselabs.vpn:common_flags", version = "0.0.2" }
 common-logger = { module = "io.norselabs.vpn:common_logger", version = "0.0.3" }
 common-network = { module = "io.norselabs.vpn:common_network", version = "0.0.4" }
 common-net-apps = { module = "io.norselabs.vpn:common_net_apps", version = "0.0.1" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-google-crashlytics = { id = "com.google.firebase.crashlytics", version = "2.9.9" }
-google-services = { id = "com.google.gms.google-services", version = "4.4.0" }
+google-crashlytics = { id = "com.google.firebase.crashlytics", version = "3.0.2" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.2" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
