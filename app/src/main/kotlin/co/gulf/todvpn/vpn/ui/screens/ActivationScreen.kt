@@ -45,7 +45,7 @@ fun ActivationScreen(
     OutlinedTextField(
       value = activationCode,
       onValueChange = { activationCode = it.trim() },
-      label = { Text("كود التفعيل") },
+      label = { Text("Activation code") },
          modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp),
@@ -73,7 +73,7 @@ fun ActivationScreen(
     Button(
       onClick = {
         if (activationCode.isBlank()) {
-          errorMessage = "يرجى إدخال كود التفعيل"
+          errorMessage = "Please enter the activation code"
           return@Button
         }
 
@@ -92,7 +92,7 @@ fun ActivationScreen(
               popUpTo("activation") { inclusive = true } // مسح شاشة التفعيل من السجل
             }
           } else {
-            errorMessage = "الكود غير صالح أو مستخدم سابقًا"
+            errorMessage = "The code is invalid or already used"
           }
 
           isLoading = false

@@ -31,9 +31,22 @@ import co.gulf.todvpn.vpn.ui.widget.TopBar
 import io.norselabs.vpn.based.compose.EffectHandler
 import io.norselabs.vpn.based.viewModel.settings.SettingsScreenEffect
 import io.norselabs.vpn.based.viewModel.settings.SettingsScreenState as State
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import io.norselabs.vpn.based.viewModel.settings.SettingsScreenViewModel
 import io.norselabs.vpn.based.vpn.DdsConfigurator
 import io.norselabs.vpn.core_vpn.vpn.Protocol
+import java.text.SimpleDateFormat
+import java.util.Locale
+
 
 @Composable
 fun SettingsScreen(
@@ -44,6 +57,47 @@ fun SettingsScreen(
 
   val viewModel = hiltViewModel<SettingsScreenViewModel>()
   val state by viewModel.stateHolder.state.collectAsState()
+  var expirationDate by remember { mutableStateOf("") }
+
+  val context = LocalContext.current
+
+
+  val deviceId = remember {
+    Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: ""
+  }
+  LaunchedEffect(Unit) {
+    if (deviceId.isEmpty()) {
+      expirationDate = "Unable to get device ID"
+      return@LaunchedEffect
+    }
+
+    FirebaseFirestore.getInstance()
+      .collection("codes")
+      .whereEqualTo("deviceId", deviceId)
+      .get()
+      .addOnSuccessListener { querySnapshot ->
+        if (querySnapshot.isEmpty) {
+          expirationDate = "Device not registered"
+          return@addOnSuccessListener
+        }
+
+
+        val document = querySnapshot.documents[0]
+        val timestamp = document.getTimestamp("endDate")
+        val activationCode = document.getString("code")
+
+        expirationDate = if (timestamp != null) {
+          val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+          dateFormat.format(timestamp.toDate())
+        } else {
+          "No expiration date found"
+        }
+
+      }
+      .addOnFailureListener {
+        expirationDate = "Error loading data"
+      }
+  }
 
   EffectHandler(viewModel.stateHolder.effects) { effect ->
     when (effect) {
@@ -57,6 +111,7 @@ fun SettingsScreen(
 
   SettingsScreenStateless(
     state = state,
+    expirationDate = expirationDate,
     navigateBack = navigateBack,
     onDnsRowClick = viewModel::onDnsRowClick,
     onDnsDialogConfirmClick = viewModel::onDnsSelected,
@@ -72,6 +127,7 @@ fun SettingsScreen(
 @Composable
 fun SettingsScreenStateless(
   state: State,
+  expirationDate: String,
   navigateBack: () -> Unit,
   onDnsRowClick: () -> Unit,
   onDnsDialogConfirmClick: (DdsConfigurator.Dns) -> Unit,
@@ -94,6 +150,7 @@ fun SettingsScreenStateless(
       Content(
         paddingValues = paddingValues,
         state = state,
+        expirationDate = expirationDate,
         onDnsRowClick = onDnsRowClick,
         onDnsDialogConfirmClick = onDnsDialogConfirmClick,
         onDnsDialogDismissClick = onDnsDialogDismissClick,
@@ -111,6 +168,7 @@ fun SettingsScreenStateless(
 fun Content(
   paddingValues: PaddingValues,
   state: State,
+  expirationDate: String,
   onDnsRowClick: () -> Unit,
   onDnsDialogConfirmClick: (DdsConfigurator.Dns) -> Unit,
   onDnsDialogDismissClick: () -> Unit,
@@ -126,6 +184,7 @@ fun Content(
         .padding(horizontal = 16.dp, vertical = 8.dp)
         .padding(paddingValues),
     ) {
+      val context = LocalContext.current
       SettingsRow(
         title = stringResource(R.string.settings_row_dns),
         value = state.currentDns
@@ -155,6 +214,32 @@ fun Content(
           .clickable(onClick = onLogsRowClick),
       )
       HorizontalDivider(color = BasedAppColor.Divider)
+      /////
+      SettingsRow(
+        title = stringResource(R.string.expiration_date),
+        value = expirationDate,
+        modifier = Modifier.clickable { /* Optional action */ }
+      )
+      HorizontalDivider(color = BasedAppColor.Divider)
+      SettingsRow(
+        title = stringResource(R.string.about_the_app),
+        value = "App Version 1.0.0", // Temporary text, can be modified
+        modifier = Modifier.clickable {
+          // Add click action here if needed
+        }
+      )
+      HorizontalDivider(color = BasedAppColor.Divider)
+      SettingsRow(
+        title = stringResource(R.string.buy_the_code),
+        value = "Get Premium",
+        modifier = Modifier.clickable {
+          // Open URL in browser
+          val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://elitbahrain.rmz.gg/"))
+          context.startActivity(intent)
+        }
+      )
+      HorizontalDivider(color = BasedAppColor.Divider)
+
     }
     if (state.isDnsSelectorVisible) {
       DnsDialog(

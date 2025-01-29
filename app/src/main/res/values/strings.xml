@@ -46,4 +46,8 @@
     <string name="split_tunneling_enabled" translatable="false">Enable VPN for selected apps</string>
     <string name="split_tunneling_bypass" translatable="false">Disable VPN for selected apps</string>
     <string name="split_tunneling_disabled" translatable="false">Disabled</string>
+
+    <string name="expiration_date" translatable="false">Code Expiration Date</string>
+    <string name="about_the_app" translatable="false">About the App</string>
+    <string name="buy_the_code" translatable="false">Buy the Code</string>
 </resources>
