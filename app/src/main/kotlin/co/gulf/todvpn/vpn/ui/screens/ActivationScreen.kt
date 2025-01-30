@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 import androidx.navigation.NavController
 import co.gulf.todvpn.vpn.ui.theme.BackgroundColor
@@ -33,90 +35,97 @@ fun ActivationScreen(
   var isLoading by remember { mutableStateOf(false) }
   var errorMessage by remember { mutableStateOf<String?>(null) }
   val scope = rememberCoroutineScope()
-
-  Column(
+  Box(
     modifier = Modifier
       .fillMaxSize()
       .background(BackgroundColor),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally
+    contentAlignment = Alignment.Center
   ) {
-        Text("Enter your activation code", color = ThirdColor)
-    OutlinedTextField(
-      value = activationCode,
-      onValueChange = { activationCode = it.trim() },
-      label = { Text("Activation code") },
-         modifier = Modifier
+    Column(
+      modifier = Modifier
         .fillMaxWidth()
         .padding(16.dp),
-      colors = OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = Color(0xBFFF9800),
-        unfocusedBorderColor = Color(0xBFFF9800).copy(alpha = 0.5f),
-        focusedLabelColor = Color(0xBFFF9800),
-        unfocusedLabelColor = Color(0xBFFF9800).copy(alpha = 0.5f),
-        focusedTextColor = Color(0xBFFF9800),
-        unfocusedTextColor = Color(0xBFFF9800).copy(alpha = 0.8f)
-      ),
-    )
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+      Text("Enter your activation code", color = ThirdColor)
 
+      OutlinedTextField(
+        value = activationCode,
+        onValueChange = { activationCode = it.trim() },
+        label = { Text("Activation code") },
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+          focusedBorderColor = Color(0xBFFF9800),
+          unfocusedBorderColor = Color(0xBFFF9800).copy(alpha = 0.5f),
+          focusedLabelColor = Color(0xBFFF9800),
+          unfocusedLabelColor = Color(0xBFFF9800).copy(alpha = 0.5f),
+          focusedTextColor = Color(0xBFFF9800),
+          unfocusedTextColor = Color(0xBFFF9800).copy(alpha = 0.8f)
+        ),
+      )
 
+      Spacer(modifier = Modifier.height(32.dp))
 
-
-
-
-
-
-
-    Spacer(modifier = Modifier.height(32.dp))
-
-    // زر التفعيل
-    Button(
-      onClick = {
-        if (activationCode.isBlank()) {
-          errorMessage = "Please enter the activation code"
-          return@Button
-        }
-
-        scope.launch {
-          isLoading = true
-          errorMessage = null
-
-          val result = checkActivationCode(
-            code = activationCode,
-            context = context
-          )
-
-          if (result) {
-            onActivationSuccess()
-            navController.navigate("dashboard") {
-              popUpTo("activation") { inclusive = true } // مسح شاشة التفعيل من السجل
-            }
-          } else {
-            errorMessage = "The code is invalid or already used"
+      Button(
+        onClick = {
+          if (activationCode.isBlank()) {
+            errorMessage = "Please enter the activation code"
+            return@Button
           }
 
-          isLoading = false
-        }
-      },
-      colors = ButtonDefaults.buttonColors(
-        containerColor = Color(0xBFFF9800),
-        contentColor = Color.White),
-      enabled = !isLoading
-    ) {
-      if (isLoading) CircularProgressIndicator(Modifier.size(24.dp))
-      else Text("Activate")
+          scope.launch {
+            isLoading = true
+            errorMessage = null
+
+            val result = checkActivationCode(
+              code = activationCode,
+              context = context
+            )
+
+            if (result) {
+              onActivationSuccess()
+              navController.navigate("dashboard") {
+                popUpTo("activation") { inclusive = true }
+              }
+            } else {
+              errorMessage = "The code is invalid or already used"
+            }
+
+            isLoading = false
+          }
+        },
+        colors = ButtonDefaults.buttonColors(
+          containerColor = Color(0xBFFF9800),
+          contentColor = Color.White
+        ),
+        enabled = !isLoading
+      ) {
+        if (isLoading) CircularProgressIndicator(Modifier.size(24.dp))
+        else Text("Activate")
+      }
+
+
+      errorMessage?.let {
+        Spacer(modifier = Modifier.height(16.dp)) // مسافة بين الزرار والرسالة
+        Text(
+          text = it,
+          color = Color.Red,
+          fontSize = 18.sp,
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.CenterHorizontally),
+          textAlign = TextAlign.Center
+        )
+      }
     }
 
-    // عرض رسائل الخطأ
-    errorMessage?.let {
-      Spacer(modifier = Modifier.height(8.dp))
-      Text(
-        text = it,
-        color = Color.Red,
-        modifier = Modifier.fillMaxWidth()
-      )
-    }
+
   }
+
+
 }
 
 private suspend fun checkActivationCode(code: String, context: Context): Boolean {
@@ -124,34 +133,33 @@ private suspend fun checkActivationCode(code: String, context: Context): Boolean
     val db = FirebaseFirestore.getInstance()
     val deviceId = getDeviceId(context)
 
-    // 1. التحقق من وجود الكود في Firestore
+
     val query = db.collection("codes")
       .whereEqualTo("code", code)
       .get()
       .await()
 
-    // إذا لم يتم العثور على الكود
+
     if (query.isEmpty) return false
 
     val document = query.documents[0]
     val isUsed = document["isUsed"] as? Boolean ?: false
     val storedDeviceId = document["deviceId"] as? String
 
-    // 2. إذا كان الكود مستخدمًا مسبقًا
+
     if (isUsed) {
-      // التحقق من تطابق Device ID
       return storedDeviceId == deviceId
     }
 
-    // 3. إذا كان الكود غير مستخدم
+
     val durationDays = document["duration"] as? Long ?: return false
 
-    // حساب تاريخ الانتهاء
+
     val endDate = Calendar.getInstance().apply {
       add(Calendar.DAY_OF_YEAR, durationDays.toInt())
     }.time
 
-    // تحديث البيانات في Firestore
+
     document.reference.update(
       mapOf(
         "isUsed" to true,
@@ -160,7 +168,7 @@ private suspend fun checkActivationCode(code: String, context: Context): Boolean
       )
     ).await()
 
-    // حفظ البيانات محليًا
+
     saveActivationDataLocally(context, durationDays.toInt(), endDate)
 
     true

@@ -291,11 +291,11 @@ class MainActivity : AppCompatActivity() {
 
   private suspend fun createTrialUser(deviceId: String): String {
     val usersRef = Firebase.firestore.collection("users")
-    // Check if user with deviceId already exists
+
     val query = usersRef.whereEqualTo("deviceId", deviceId).get().await()
 
     return if (query.isEmpty) {
-      // Create new user if not exists
+
       val newUser = hashMapOf(
         "deviceId" to deviceId,
         "trialActive" to true,
@@ -320,11 +320,11 @@ class MainActivity : AppCompatActivity() {
 
   private suspend fun createUserWithCode(deviceId: String) {
     val usersRef = Firebase.firestore.collection("users")
-    // Check if user with deviceId already exists
+
     val query = usersRef.whereEqualTo("deviceId", deviceId).get().await()
 
     if (query.isEmpty) {
-      // Create new user if not exists
+
       val newUser = hashMapOf(
         "deviceId" to deviceId,
         "trialActive" to false,
@@ -333,7 +333,7 @@ class MainActivity : AppCompatActivity() {
       )
       usersRef.add(newUser).await()
     } else {
-      // Update existing user (if needed, adjust fields accordingly)
+
       val existingUserId = query.documents.first().id
       usersRef.document(existingUserId).update(
         mapOf(

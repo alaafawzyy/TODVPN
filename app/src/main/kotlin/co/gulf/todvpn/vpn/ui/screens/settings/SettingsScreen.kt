@@ -34,18 +34,22 @@ import io.norselabs.vpn.based.viewModel.settings.SettingsScreenState as State
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import io.norselabs.vpn.based.viewModel.settings.SettingsScreenViewModel
 import io.norselabs.vpn.based.vpn.DdsConfigurator
 import io.norselabs.vpn.core_vpn.vpn.Protocol
 import java.text.SimpleDateFormat
 import java.util.Locale
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 
 
 @Composable
@@ -58,7 +62,6 @@ fun SettingsScreen(
   val viewModel = hiltViewModel<SettingsScreenViewModel>()
   val state by viewModel.stateHolder.state.collectAsState()
   var expirationDate by remember { mutableStateOf("") }
-
   val context = LocalContext.current
 
 
@@ -178,13 +181,12 @@ fun Content(
   onSplitTunnelingClick: () -> Unit,
   onLogsRowClick: () -> Unit,
 ) {
-  Box {
+  Box(modifier = Modifier.fillMaxSize()) {
     Column(
       modifier = Modifier
         .padding(horizontal = 16.dp, vertical = 8.dp)
-        .padding(paddingValues),
+        .padding(paddingValues)
     ) {
-      val context = LocalContext.current
       SettingsRow(
         title = stringResource(R.string.settings_row_dns),
         value = state.currentDns
@@ -214,7 +216,7 @@ fun Content(
           .clickable(onClick = onLogsRowClick),
       )
       HorizontalDivider(color = BasedAppColor.Divider)
-      /////
+
       SettingsRow(
         title = stringResource(R.string.expiration_date),
         value = expirationDate,
@@ -223,24 +225,33 @@ fun Content(
       HorizontalDivider(color = BasedAppColor.Divider)
       SettingsRow(
         title = stringResource(R.string.about_the_app),
-        value = "App Version 1.0.0", // Temporary text, can be modified
+        value = "App Version 1.0.0",
         modifier = Modifier.clickable {
-          // Add click action here if needed
-        }
-      )
-      HorizontalDivider(color = BasedAppColor.Divider)
-      SettingsRow(
-        title = stringResource(R.string.buy_the_code),
-        value = "Get Premium",
-        modifier = Modifier.clickable {
-          // Open URL in browser
-          val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://elitbahrain.rmz.gg/"))
-          context.startActivity(intent)
+
         }
       )
       HorizontalDivider(color = BasedAppColor.Divider)
 
+
+      val annotatedString = buildAnnotatedString {
+        pushStyle(SpanStyle(color = Color.White))
+        append("To buy the activation code please visit the website /n  ")
+        pushStyle(SpanStyle(color = Color(0xFF00BFFF)))
+        append("https://elitbahrain.rmz.gg/")
+        pop()
+      }
+
+      Text(
+        text = annotatedString,
+        modifier = Modifier
+          .padding(start = 16.dp, end = 16.dp, top = 20.dp)
+          .fillMaxWidth(),
+        style = MaterialTheme.typography.body1
+      )
     }
+
+    HorizontalDivider(color = BasedAppColor.Divider)
+
     if (state.isDnsSelectorVisible) {
       DnsDialog(
         state = state,
@@ -260,6 +271,7 @@ fun Content(
     }
   }
 }
+
 
 @Composable
 private fun SettingsRow(
