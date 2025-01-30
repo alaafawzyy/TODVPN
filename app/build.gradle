@@ -115,6 +115,10 @@ dependencies {
     implementation project(path: ':common_map')
     implementation project(path: ':common_logger')
 //    implementation "io.norselabs.vpn:based:0.0.1"
+
+    implementation "androidx.compose.material:material:<version>"
+    implementation "androidx.compose.ui:ui:<version>"
+    implementation "androidx.compose.material3:material3:<version>"
 }
 
 

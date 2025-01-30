@@ -49,5 +49,5 @@
 
     <string name="expiration_date" translatable="false">Code Expiration Date</string>
     <string name="about_the_app" translatable="false">About the App</string>
-    <string name="buy_the_code" translatable="false">Buy the Code</string>
+    <string name="buy_the_code" translatable="false">To buy the activation code please visit the website </string>
 </resources>
