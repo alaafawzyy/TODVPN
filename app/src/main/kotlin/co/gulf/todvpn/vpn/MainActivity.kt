@@ -23,7 +23,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -49,7 +47,7 @@ import co.gulf.todvpn.vpn.ui.screens.countries.CountriesScreen
 import co.gulf.todvpn.vpn.ui.screens.dashboard.DashboardScreen
 import co.gulf.todvpn.vpn.ui.screens.settings.SettingsScreen
 import co.gulf.todvpn.vpn.ui.screens.split_tunneling.SplitTunnelingScreenScreen
-import co.gulf.todvpn.vpn.ui.screens.ActivationScreen
+import co.gulf.todvpn.vpn.ui.screens.activation.ActivationScreen
 import co.gulf.todvpn.vpn.ui.theme.BasedVPNTheme
 import co.gulf.todvpn.vpn.ui.theme.ThirdColor
 import com.google.firebase.Firebase
@@ -58,13 +56,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.norselabs.vpn.common_logger.logger.FileLogTree
 import io.norselabs.vpn.common_logger.share.ChooserIntent
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
-import java.util.Calendar
 import java.util.Date
-import java.util.TimeZone
-import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await

@@ -1,6 +1,6 @@
 
 
-package co.gulf.todvpn.vpn.ui.screens
+package co.gulf.todvpn.vpn.ui.screens.activation
 
 import android.content.Context
 import android.provider.Settings
@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,15 +41,56 @@ fun ActivationScreen(
       .fillMaxSize()
       .background(BackgroundColor),
     contentAlignment = Alignment.Center
+
   ) {
     Column(
       modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
+        .fillMaxSize()
+        .padding(10.dp),
       verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally
+      horizontalAlignment = Alignment.Start
     ) {
-      Text("Enter your activation code", color = ThirdColor)
+
+      Text(
+        text = "Get Your Activation Code",
+        color = ThirdColor,
+        fontWeight = FontWeight.Medium,
+        fontSize = 22.sp,
+        modifier = Modifier
+          .padding(bottom = 16.dp)
+          .align(Alignment.CenterHorizontally)
+      )
+
+      Column(modifier = Modifier.padding(start = 15.dp)) {
+        Text(
+          text = "Official website offers 30-day activation \ncodes.",
+          color = Color.White,
+          fontWeight = FontWeight.Medium,
+          textAlign = TextAlign.Start,
+          modifier = Modifier.fillMaxWidth()
+        )
+
+        Text(
+          text = "To purchase a 3-month or 6-month activation \ncode, visit authorized retailers.",
+          color = Color.White,
+          fontWeight = FontWeight.Medium,
+          textAlign = TextAlign.Start,
+          modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+          text = "Purchase activation code online:\nelitbahrain.rmz.gg",
+          color = Color.White,
+          fontWeight = FontWeight.Medium,
+          textAlign = TextAlign.Start,
+          modifier = Modifier.fillMaxWidth()
+        )
+      }
+      Spacer(modifier = Modifier.height(16.dp))
+
+
 
       OutlinedTextField(
         value = activationCode,
@@ -70,6 +112,7 @@ fun ActivationScreen(
       Spacer(modifier = Modifier.height(32.dp))
 
       Button(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
         onClick = {
           if (activationCode.isBlank()) {
             errorMessage = "Please enter the activation code"
@@ -109,7 +152,7 @@ fun ActivationScreen(
 
 
       errorMessage?.let {
-        Spacer(modifier = Modifier.height(16.dp)) // مسافة بين الزرار والرسالة
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
           text = it,
           color = Color.Red,
