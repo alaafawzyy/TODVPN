@@ -21,7 +21,7 @@ android {
         targetSdk libs.versions.compileSdk.get().toInteger()
         compileSdk libs.versions.compileSdk.get().toInteger()
 
-        versionCode 10
+        versionCode 15
         versionName "1.4.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -36,10 +36,12 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility libs.versions.targetJvm.get()
         targetCompatibility libs.versions.targetJvm.get()
@@ -70,8 +72,7 @@ android {
 
 dependencies {
     implementation platform('com.google.firebase:firebase-bom:32.3.1') // أو أحدث نسخة
-    implementation 'com.google.firebase:firebase-auth-ktx'
-    implementation 'com.google.firebase:firebase-firestore-ktx'
+
     implementation libs.android.core.ktx
     implementation libs.kotlin.stdlib
     implementation libs.coroutines.core
@@ -84,15 +85,12 @@ dependencies {
     implementation libs.accompanist.systemuicontroller
     implementation platform(libs.google.firebase.bom)
     implementation libs.google.firebase.crashlytics
-    implementation libs.google.firebase.analytics
+    //implementation libs.google.firebase.analytics
     implementation libs.android.appcompat
     implementation libs.kotlin.collection.immutable
     implementation libs.coil
-//    implementation libs.core.vpn
     implementation libs.common
-//    implementation libs.common.map
     implementation libs.common.flags
-//    implementation libs.common.logger
     implementation libs.common.net.apps
     implementation libs.material3.vlatestversion
     implementation "androidx.compose.foundation:foundation:1.6.7"
@@ -101,9 +99,9 @@ dependencies {
     implementation "androidx.compose.foundation:foundation-layout:1.6.7"
 
     implementation libs.firebase.firestore.ktx
-
-    implementation 'com.google.firebase:firebase-auth:23.1.0'
-    implementation 'com.google.firebase:firebase-core:21.1.0'
+    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
 
     kapt libs.hilt.compiler
@@ -119,6 +117,13 @@ dependencies {
     implementation "androidx.compose.material:material:<version>"
     implementation "androidx.compose.ui:ui:<version>"
     implementation "androidx.compose.material3:material3:<version>"
+
+
+
+    implementation 'com.google.android.gms:play-services-base:18.3.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
 }
+
 
 

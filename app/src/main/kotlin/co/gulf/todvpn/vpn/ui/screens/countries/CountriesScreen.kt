@@ -122,7 +122,7 @@ fun Content(
 
       is Status.Data -> {
         val todStreamingCountries = state.countries.filter {
-          it.name in listOf("United Arab Emirates", "Qatar", "Bahrain")
+          it.name in listOf("United Arab Emirates", "Qatar", "Bahrain","Iraq","Oman")
         }
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {

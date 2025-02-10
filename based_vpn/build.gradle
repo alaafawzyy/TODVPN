@@ -81,14 +81,15 @@ dependencies {
     implementation libs.common
     implementation libs.common.network
     implementation libs.common.flags
-    implementation libs.common.logger
-    implementation libs.core.vpn
+    implementation project(path: ':common_logger')
+    //implementation libs.common.logger
+    //implementation libs.core.vpn
     implementation libs.compose.runtime
     implementation libs.android.appcompat
     implementation libs.kotlin.collection.immutable
 
 //    implementation project(path: ':common_network')
-//    implementation project(path: ':core_vpn')
+    implementation project(path: ':core_vpn')
 
     kapt libs.hilt.compiler
 }

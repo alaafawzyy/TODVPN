@@ -2,7 +2,7 @@
 
 buildscript {
     dependencies {
-        classpath 'com.google.gms:google-services:4.3.15' // أو أحدث نسخة
+        classpath 'com.google.gms:google-services:4.4.0' // أو أحدث نسخة
     }
 }
 
@@ -15,4 +15,15 @@ plugins {
     alias libs.plugins.google.services apply false
     alias libs.plugins.google.crashlytics apply false
 
+}
+
+allprojects {
+    configurations.all {
+        resolutionStrategy.eachDependency {
+            if (requested.group == "io.norselabs.vpn" &&
+                    requested.name == "common_logger") {
+                useVersion("0.0.3") // استخدم نفس النسخة ومنع التكرار
+            }
+        }
+    }
 }
